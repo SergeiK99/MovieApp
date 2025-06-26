@@ -47,7 +47,7 @@ namespace MovieApp.ViewModels
         public MoviesViewModel()
         {
             Movies = new ObservableCollection<Movie>();
-            LoadMoviesCommand = new RelayCommand(async _ => await LoadMoviesAsync());
+            LoadMoviesCommand = new RelayCommand(async load => await LoadMoviesAsync());
             ChangeSortCommand = new RelayCommand(param => ChangeSort(param?.ToString()));
         }
 

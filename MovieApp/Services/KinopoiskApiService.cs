@@ -3,12 +3,13 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using MovieApp.Models;
+using MovieApp.DTOs;
 using System.Text.Json;
 using System.Linq;
 
 namespace MovieApp.Services
 {
-    public class KinopoiskApiService
+    public partial class KinopoiskApiService
     {
         private const string ApiKey = "64e60f8c-806b-4772-94b6-17b21cc4d09c";
         private const string BaseUrl = "https://kinopoiskapiunofficial.tech/api/v2.2/films/collections";
@@ -47,32 +48,6 @@ namespace MovieApp.Services
                 }
             }
             return movies;
-        }
-
-        private class KinopoiskResponse
-        {
-            public List<FilmDto> items { get; set; }
-        }
-        private class FilmDto
-        {
-            public int kinopoiskId { get; set; }
-            public string nameRu { get; set; }
-            public string nameEn { get; set; }
-            public string nameOriginal { get; set; }
-            public int? year { get; set; }
-            public string posterUrlPreview { get; set; }
-            public List<GenreDto> genres { get; set; }
-            public List<CountryDto> countries { get; set; }
-            public string type { get; set; }
-            public string description { get; set; }
-        }
-        private class GenreDto
-        {
-            public string genre { get; set; }
-        }
-        private class CountryDto
-        {
-            public string country { get; set; }
         }
     }
 } 
