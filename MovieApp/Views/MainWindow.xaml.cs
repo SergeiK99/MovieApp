@@ -9,6 +9,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using MovieApp.ViewModels;
+using MovieApp.Views;
 
 namespace MovieApp
 {
@@ -17,12 +18,27 @@ namespace MovieApp
     /// </summary>
     public partial class MainWindow : Window
     {
+        private UserControl _mainPage;
+        private UserControl _favoritesPage;
+
         public MainWindow()
         {
             InitializeComponent();
-            var vm = new MoviesViewModel();
-            DataContext = vm;
-            vm.LoadMoviesCommand.Execute(null);
+            _mainPage = new MainMoviesView(); // создадим отдельный UserControl для главной страницы
+            _favoritesPage = new FavoriteMoviesView();
+            MainContent.Content = _mainPage;
+        }
+
+        private void MainPageButton_Click(object sender, RoutedEventArgs e)
+        {
+            _mainPage = new MainMoviesView();
+            MainContent.Content = _mainPage;
+        }
+
+        private void FavoritesPageButton_Click(object sender, RoutedEventArgs e)
+        {
+            _favoritesPage = new FavoriteMoviesView();
+            MainContent.Content = _favoritesPage;
         }
     }
 }

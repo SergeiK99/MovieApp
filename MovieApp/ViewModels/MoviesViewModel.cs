@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using MovieApp.Services;
 using System.Threading.Tasks;
 using MovieApp.Helpers;
+using System.Linq;
 
 namespace MovieApp.ViewModels
 {
@@ -41,14 +42,46 @@ namespace MovieApp.ViewModels
             set { _isLoading = value; OnPropertyChanged(); }
         }
 
+        private int _currentPage = 1;
+        public int CurrentPage
+        {
+            get => _currentPage;
+            set { _currentPage = value; OnPropertyChanged(); }
+        }
+        private int _totalPages = 1;
+        public int TotalPages
+        {
+            get => _totalPages;
+            set { _totalPages = value; OnPropertyChanged(); }
+        }
+
+        private FavoritesService _favoritesService = new FavoritesService();
+
+        public FavoritesService FavoritesService => _favoritesService;
+
         public ICommand LoadMoviesCommand { get; }
         public ICommand ChangeSortCommand { get; }
+        public ICommand NextPageCommand { get; }
+        public ICommand PrevPageCommand { get; }
+        public ICommand AddToFavoritesCommand { get; }
+        public ICommand RemoveFromFavoritesCommand { get; }
 
         public MoviesViewModel()
         {
             Movies = new ObservableCollection<Movie>();
-            LoadMoviesCommand = new RelayCommand(async load => await LoadMoviesAsync());
+            LoadMoviesCommand = new RelayCommand(async _ => await LoadMoviesAsync());
             ChangeSortCommand = new RelayCommand(param => ChangeSort(param?.ToString()));
+            NextPageCommand = new RelayCommand(async _ => await GoToPage(CurrentPage + 1), _ => CurrentPage < TotalPages && !IsLoading);
+            PrevPageCommand = new RelayCommand(async _ => await GoToPage(CurrentPage - 1), _ => CurrentPage > 1 && !IsLoading);
+            AddToFavoritesCommand = new RelayCommand(m => AddToFavorites(m as Movie));
+            RemoveFromFavoritesCommand = new RelayCommand(m => RemoveFromFavorites(m as Movie));
+        }
+
+        private async Task GoToPage(int page)
+        {
+            if (page < 1 || page > TotalPages) return;
+            CurrentPage = page;
+            await LoadMoviesAsync();
         }
 
         private async Task LoadMoviesAsync()
@@ -56,13 +89,14 @@ namespace MovieApp.ViewModels
             IsLoading = true;
             try
             {
-                var movies = await _apiService.GetPopularMoviesAsync();
-                Movies = new ObservableCollection<Movie>(movies);
+                var result = await _apiService.GetPopularMoviesAsync(CurrentPage);
+                Movies = new ObservableCollection<Movie>(result.Movies);
+                TotalPages = result.TotalPages;
                 SortMovies();
             }
             catch
             {
-                // TODO: обработка ошибок (например, показать сообщение)
+                // TODO: обработка ошибок
             }
             finally
             {
@@ -95,6 +129,22 @@ namespace MovieApp.ViewModels
                     break;
             }
             Movies = new ObservableCollection<Movie>(sorted);
+        }
+
+        public bool IsFavorite(Movie movie) => movie != null && _favoritesService.IsFavorite(movie.Id);
+
+        private void AddToFavorites(Movie movie)
+        {
+            if (movie == null) return;
+            _favoritesService.Add(movie);
+            Movies = new ObservableCollection<Movie>(Movies);
+        }
+
+        private void RemoveFromFavorites(Movie movie)
+        {
+            if (movie == null) return;
+            _favoritesService.Remove(movie.Id);
+            Movies = new ObservableCollection<Movie>(Movies);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

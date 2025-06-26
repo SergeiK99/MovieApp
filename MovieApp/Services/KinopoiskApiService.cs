@@ -22,16 +22,14 @@ namespace MovieApp.Services
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
 
-        public async Task<List<Movie>> GetPopularMoviesAsync()
+        public async Task<KinopoiskPageResult> GetPopularMoviesAsync(int page = 1)
         {
-            var url = BaseUrl + "?type=TOP_250_MOVIES&page=1";
+            var url = BaseUrl + $"?type=TOP_250_MOVIES&page={page}";
             var response = await _httpClient.GetAsync(url);
             response.EnsureSuccessStatusCode();
             var json = await response.Content.ReadAsStringAsync();
-            System.Diagnostics.Debug.WriteLine(json);
             var result = JsonSerializer.Deserialize<KinopoiskResponse>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
             var movies = new List<Movie>();
-            System.Diagnostics.Debug.WriteLine($"result.items count: {result?.items?.Count}");
             if (result?.items != null)
             {
                 foreach (var f in result.items)
@@ -43,11 +41,14 @@ namespace MovieApp.Services
                         Year = f.year ?? 0,
                         PosterUrl = f.posterUrlPreview,
                         Genres = f.genres != null ? f.genres.Select(g => g.genre).ToList() : new List<string>(),
-                        Actors = new List<string>() // В этом ответе нет актёров
                     });
                 }
             }
-            return movies;
+            return new KinopoiskPageResult
+            {
+                Movies = movies,
+                TotalPages = result?.totalPages ?? 1
+            };
         }
     }
 } 
