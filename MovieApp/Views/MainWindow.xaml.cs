@@ -8,6 +8,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using MovieApp.ViewModels;
 
 namespace MovieApp
 {
@@ -19,6 +20,9 @@ namespace MovieApp
         public MainWindow()
         {
             InitializeComponent();
+            var vm = new MoviesViewModel();
+            DataContext = vm;
+            vm.LoadMoviesCommand.Execute(null);
         }
     }
 }
