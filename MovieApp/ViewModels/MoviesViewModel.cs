@@ -94,15 +94,23 @@ namespace MovieApp.ViewModels
             await LoadMoviesAsync();
         }
 
+        private void UpdatePagingCommands()
+        {
+            (NextPageCommand as RelayCommand)?.RaiseCanExecuteChanged();
+            (PrevPageCommand as RelayCommand)?.RaiseCanExecuteChanged();
+        }
+
         private async Task LoadMoviesAsync()
         {
             IsLoading = true;
+            UpdatePagingCommands();
             try
             {
                 var result = await _apiService.GetPopularMoviesAsync(CurrentPage);
                 Movies = new ObservableCollection<Movie>(result.Movies);
                 TotalPages = result.TotalPages;
                 SortMovies();
+                UpdatePagingCommands();
             }
             catch
             {
@@ -111,6 +119,7 @@ namespace MovieApp.ViewModels
             finally
             {
                 IsLoading = false;
+                UpdatePagingCommands();
             }
         }
 
