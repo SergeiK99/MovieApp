@@ -27,16 +27,18 @@ namespace MovieApp
         private FavoritesService _favoritesService;
         private Movie _lastSelectedMovie;
         private FavoriteMoviesViewModel _favoriteMoviesViewModel;
+        private enum PageType { Main, Favorites }
+        private PageType _lastPageType = PageType.Main;
 
         public MainWindow()
         {
             InitializeComponent();
             _favoritesService = new FavoritesService();
             _mainMoviesViewModel = new MoviesViewModel(_favoritesService);
-            _mainMoviesViewModel.SetOpenMovieDetailsAction(OpenMovieDetails);
+            _mainMoviesViewModel.SetOpenMovieDetailsAction(OpenMovieDetailsFromMain);
             _mainPage = new MainMoviesView { DataContext = _mainMoviesViewModel };
             _favoriteMoviesViewModel = new FavoriteMoviesViewModel(_favoritesService);
-            _favoriteMoviesViewModel.SetOpenMovieDetailsAction(OpenMovieDetails);
+            _favoriteMoviesViewModel.SetOpenMovieDetailsAction(OpenMovieDetailsFromFavorites);
             _favoritesPage = new FavoriteMoviesView { DataContext = _favoriteMoviesViewModel };
             MainContent.Content = _mainPage;
             _mainMoviesViewModel.LoadMoviesCommand.Execute(null);
@@ -56,6 +58,16 @@ namespace MovieApp
             MainContent.Content = _favoritesPage;
         }
 
+        private void OpenMovieDetailsFromMain(Movie movie)
+        {
+            _lastPageType = PageType.Main;
+            OpenMovieDetails(movie);
+        }
+        private void OpenMovieDetailsFromFavorites(Movie movie)
+        {
+            _lastPageType = PageType.Favorites;
+            OpenMovieDetails(movie);
+        }
         private void OpenMovieDetails(Movie movie)
         {
             _lastSelectedMovie = movie;
@@ -63,11 +75,18 @@ namespace MovieApp
             _detailsPage = new MovieDetailsView { DataContext = detailsVm };
             MainContent.Content = _detailsPage;
         }
-
         private void GoBackFromDetails()
         {
-            MainContent.Content = _mainPage;
-            _mainMoviesViewModel.LoadMoviesCommand.Execute(null);
+            if (_lastPageType == PageType.Favorites)
+            {
+                _favoriteMoviesViewModel.Refresh();
+                MainContent.Content = _favoritesPage;
+            }
+            else
+            {
+                MainContent.Content = _mainPage;
+                _mainMoviesViewModel.LoadMoviesCommand.Execute(null);
+            }
         }
     }
 }
