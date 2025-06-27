@@ -10,12 +10,16 @@ namespace MovieApp.ViewModels
     {
         public ObservableCollection<Movie> FavoriteMovies { get; set; }
         public ICommand RemoveFromFavoritesCommand { get; }
-        private FavoritesService _favoritesService = new FavoritesService();
+        public ICommand OpenMovieDetailsCommand { get; private set; }
+        private FavoritesService _favoritesService;
+        private System.Action<Movie> _openMovieDetailsAction;
 
-        public FavoriteMoviesViewModel()
+        public FavoriteMoviesViewModel(FavoritesService favoritesService)
         {
+            _favoritesService = favoritesService;
             LoadFavorites();
             RemoveFromFavoritesCommand = new RelayCommand(m => RemoveFromFavorites(m as Movie));
+            OpenMovieDetailsCommand = new RelayCommand(m => _openMovieDetailsAction?.Invoke(m as Movie));
         }
 
         private void LoadFavorites()
@@ -29,6 +33,16 @@ namespace MovieApp.ViewModels
             if (movie == null) return;
             _favoritesService.Remove(movie.Id);
             FavoriteMovies.Remove(movie);
+        }
+
+        public void SetOpenMovieDetailsAction(System.Action<Movie> action)
+        {
+            _openMovieDetailsAction = action;
+        }
+
+        public void Refresh()
+        {
+            LoadFavorites();
         }
     }
 } 

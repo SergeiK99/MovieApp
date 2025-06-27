@@ -8,6 +8,7 @@ using MovieApp.Services;
 using System.Threading.Tasks;
 using MovieApp.Helpers;
 using System.Linq;
+using System;
 
 namespace MovieApp.ViewModels
 {
@@ -55,7 +56,7 @@ namespace MovieApp.ViewModels
             set { _totalPages = value; OnPropertyChanged(); }
         }
 
-        private FavoritesService _favoritesService = new FavoritesService();
+        private FavoritesService _favoritesService;
 
         public FavoritesService FavoritesService => _favoritesService;
 
@@ -65,9 +66,17 @@ namespace MovieApp.ViewModels
         public ICommand PrevPageCommand { get; }
         public ICommand AddToFavoritesCommand { get; }
         public ICommand RemoveFromFavoritesCommand { get; }
+        public ICommand OpenMovieDetailsCommand { get; private set; }
 
-        public MoviesViewModel()
+        private Action<Movie> _openMovieDetailsAction;
+        public void SetOpenMovieDetailsAction(Action<Movie> action)
         {
+            _openMovieDetailsAction = action;
+        }
+
+        public MoviesViewModel(FavoritesService favoritesService)
+        {
+            _favoritesService = favoritesService;
             Movies = new ObservableCollection<Movie>();
             LoadMoviesCommand = new RelayCommand(async _ => await LoadMoviesAsync());
             ChangeSortCommand = new RelayCommand(param => ChangeSort(param?.ToString()));
@@ -75,6 +84,7 @@ namespace MovieApp.ViewModels
             PrevPageCommand = new RelayCommand(async _ => await GoToPage(CurrentPage - 1), _ => CurrentPage > 1 && !IsLoading);
             AddToFavoritesCommand = new RelayCommand(m => AddToFavorites(m as Movie));
             RemoveFromFavoritesCommand = new RelayCommand(m => RemoveFromFavorites(m as Movie));
+            OpenMovieDetailsCommand = new RelayCommand(m => _openMovieDetailsAction?.Invoke(m as Movie));
         }
 
         private async Task GoToPage(int page)

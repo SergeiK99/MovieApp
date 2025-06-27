@@ -12,5 +12,7 @@ namespace MovieApp.DTOs
         public List<CountryDto> countries { get; set; }
         public string type { get; set; }
         public string description { get; set; }
+        public double? ratingKinopoisk { get; set; }
+        public double? ratingImdb { get; set; }
     }
 } 

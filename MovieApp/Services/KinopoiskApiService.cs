@@ -41,6 +41,8 @@ namespace MovieApp.Services
                         Year = f.year ?? 0,
                         PosterUrl = f.posterUrlPreview,
                         Genres = f.genres != null ? f.genres.Select(g => g.genre).ToList() : new List<string>(),
+                        Description = f.description,
+                        Rating = f.ratingKinopoisk ?? 0
                     });
                 }
             }

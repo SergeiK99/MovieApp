@@ -23,7 +23,12 @@
             <ItemsControl ItemsSource="{Binding Movies}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Border BorderBrush="Gray" BorderThickness="1" Margin="5" Padding="5">
+                        <Border BorderBrush="Gray" BorderThickness="1" Margin="5" Padding="5" Background="White">
+                            <Border.InputBindings>
+                                <MouseBinding Gesture="LeftClick"
+                                              Command="{Binding DataContext.OpenMovieDetailsCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                              CommandParameter="{Binding}" />
+                            </Border.InputBindings>
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto"/>

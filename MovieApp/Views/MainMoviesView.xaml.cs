@@ -8,9 +8,6 @@ namespace MovieApp.Views
         public MainMoviesView()
         {
             InitializeComponent();
-            var vm = new MoviesViewModel();
-            DataContext = vm;
-            vm.LoadMoviesCommand.Execute(null);
         }
     }
 } 

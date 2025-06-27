@@ -1,0 +1,37 @@
+<UserControl x:Class="MovieApp.Views.MovieDetailsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:local="clr-namespace:MovieApp.Views"
+             mc:Ignorable="d"
+             d:DesignHeight="500" d:DesignWidth="400">
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Left">
+            <Button Content="Назад" Command="{Binding GoBackCommand}" Margin="0,0,10,0" Padding="12,4"/>
+        </StackPanel>
+        <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+            <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Top" Width="320">
+                <Border CornerRadius="10" BorderBrush="#DDD" BorderThickness="1" Margin="0,0,0,16" Background="#FAFAFA" Padding="12">
+                    <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+                        <Image Source="{Binding PosterUrl}" Height="220" Width="150" Stretch="UniformToFill" Margin="0,0,0,12"/>
+                        <TextBlock Text="{Binding Title}" FontSize="20" FontWeight="Bold" TextAlignment="Center" Margin="0,0,0,4"/>
+                        <TextBlock Text="{Binding Year}" FontSize="14" Foreground="Gray" TextAlignment="Center" Margin="0,0,0,8"/>
+                        <TextBlock Text="{Binding GenresString}" FontSize="13" Foreground="#666" TextAlignment="Center" Margin="0,0,0,4"/>
+                        <TextBlock Text="{Binding ActorsString}" FontSize="13" Foreground="#666" TextAlignment="Center" Margin="0,0,0,4"/>
+                        <TextBlock Text="{Binding RatingString}" FontSize="13" Foreground="#666" TextAlignment="Center" Margin="0,0,0,8"/>
+                        <TextBlock Text="{Binding Description}" TextWrapping="Wrap" FontSize="13" Margin="0,0,0,0" TextAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Content="{Binding FavoriteButtonText}" Command="{Binding ToggleFavoriteCommand}" Width="140" Height="32" Margin="0,0,10,0" Padding="8,0"/>
+        </StackPanel>
+    </Grid>
+</UserControl> 
